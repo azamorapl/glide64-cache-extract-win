@@ -1,0 +1,24 @@
+#!/bin/bash
+
+for i in /textures/*.htc
+do
+    BASENAME=${i##*/}
+    FILENAME=${BASENAME%.htc}
+
+    echo "Extracting ${BASENAME}..."
+    zcat "${i}" | gliden64_cache_extract -b -p "${FILENAME}" | tar x
+ 
+    echo "Converting bitmaps..."
+    for j in *.bmp
+    do
+        convert -strip -define png:format=png32 -define png:compression-level=9 "${j}" "${j%.bmp}.png"
+    done
+
+    echo "Cleaning up..."
+    rm *.bmp
+    mkdir "/textures/${FILENAME}"
+    mv *.png "/textures/${FILENAME}"
+
+    echo "Success."
+    echo ""
+done
